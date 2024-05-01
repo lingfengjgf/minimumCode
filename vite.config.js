@@ -7,6 +7,7 @@ export default defineConfig({
     alias: {
       '@': '/src',
       '@preview': '/src/components/preview',
+      '@config': '/src/components/config',
     },
   },
 });

@@ -41,13 +41,29 @@ const selectItem = (item) => {
 onMounted(() => {
   window.addEventListener('message', (event) => {
     const { data, source } = event;
-    console.log('child message:',data, source);
+    const { components } = previewList;
+    // console.log('child message:',data, source);
     if (data.type === 'init') {
       parent = source;
     }
     if (data.type === 'create') {
-      previewList.components.push(data.data);
+      components.push(data.data);
     }
+    if (data.type === 'update') {
+      // console.log("iframe update:",data.data);
+      const { id, type, key, value } = data.data;
+      const index = components.findIndex(comp => comp.id === id);
+      if (index > -1) {
+        components[index][type][key] = value;
+      }
+    }
+    if (data.type === 'cover') {
+      const { countComs, components } = data.data;
+      previewList.countComs = countComs;
+      previewList.components = components;
+      currentId.value = '';
+    }
+
   });
 });
 </script>
@@ -59,11 +75,9 @@ onMounted(() => {
 }
 .preview-container{
   width: 375px;
+  height: calc(100vh - 75px);
   background: #fff;
   margin: 0 auto;
-}
-.preview-content{
-  min-height: 500px;
 }
 .preview-component{
   position: relative;

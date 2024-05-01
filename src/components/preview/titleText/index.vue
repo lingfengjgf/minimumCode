@@ -1,6 +1,6 @@
 <template>
   <div class="titleText" :style="data.styles">
-    {{ data.title }}
+    {{ data.config.value }}
   </div>
 </template>
 

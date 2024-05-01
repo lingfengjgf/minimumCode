@@ -21,6 +21,10 @@ const toolsList = [{
       fontSize: '14px',
       color: '#333',
       textAlign: 'center'
+    },
+    configName: 'titleTextConfig',
+    config:{
+      value: '这是标题文本'
     }
   }
 },{
@@ -31,8 +35,9 @@ const toolsList = [{
   componentSchema: {
     name: 'image',
     title: '图片',
+    configName: 'imageConfig',
     config:{
-      src: '',
+      value: '',
     }
   }
 }]

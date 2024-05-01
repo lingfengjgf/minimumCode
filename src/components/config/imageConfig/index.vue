@@ -1,8 +1,7 @@
 <template>
-  <div v-if="data.config.value" class="image">
+  <div class="image">
     {{ data.title }}
   </div>
-  <div v-else class="image none"> 请上传图片 </div>
 </template>
 
 <script setup>
@@ -15,12 +14,5 @@ const props = defineProps(['data'])
 <style scoped>
 .image{
   box-sizing: border-box;
-  width: 100%;
-  height: 100px;
-  background: #fff;
-  text-align: center;
-}
-.none{
-  line-height: 100px;
 }
 </style>
