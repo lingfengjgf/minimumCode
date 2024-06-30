@@ -3,7 +3,9 @@
     <div class=" text-center edit-header"><edit-header /></div>
     <div class=" flex justify-between edit-body">
       <div class="edit-left">
-        <tools />
+        <div v-for="item in toolsList" :key="item.name" class="edit-left-list" draggable="true" @dragstart="onDragStart" @drag="onDrag">
+          <tools :toolItem="item" />
+        </div>
       </div>
       <div class=" flex-1 bg-slate-200">
         <iframe src="/preview" class=" w-full edit-iframe" frameborder="0"></iframe>
@@ -20,6 +22,7 @@ import EditHeader from '../components/edit/header.vue';
 import tools from '../components/edit/tools.vue';
 import config from '@config/index.vue';
 import { previewList } from '../stores/preview';
+import { toolsList } from "../stores/edit.js"
 import { onMounted, ref } from 'vue';
 let child = null;
 const currentId = ref('');
@@ -28,7 +31,7 @@ let recordId = '';
 let latestRecordId = '';
 
 onMounted(() => {
-  
+
   // indexDB
   const req = window.indexedDB.open('minimum-code-record');
   let db;
@@ -231,6 +234,22 @@ onMounted(() => {
     child.postMessage({ type: 'cover', data: { countComs, components } });
   })
 });
+
+//拖拽开始的事件
+const onDragStart = (e) => {
+  console.log("开始拖拽", e);
+};
+
+//拖拽结束的事件
+const onEnd = () => {
+  console.log("结束拖拽");
+};
+const onDrag = e => {
+  // console.log("拖拽中", e);
+  if (child) {
+    child.postMessage({ type: 'drag', data: { dragX: e.x, dragY: e.y} });
+  }
+};
 </script>
 
 <style scoped>
@@ -243,10 +262,8 @@ onMounted(() => {
 .edit-body {
   height: calc(100vh - 55px);
 }
-.edit-left{
-  width: 200px;
-  display: flex;
-  flex-wrap: wrap;
+.edit-left-list{
+  display: inline-block;
 }
 .edit-right{
   width: 375px;

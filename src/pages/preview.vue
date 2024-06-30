@@ -1,6 +1,6 @@
 <template>
   <div class="preview">
-    <div class="preview-container">
+    <div id="previewContainer" @dragenter="onDragenter" @dragleave="onDragleave" class="preview-container">
       <div class="preview-content">
         <div @click="selectItem(item)" v-for="(item, index) in previewList.components" :key="index" class="preview-component-box">
           <component :is='item.name' :data='item' class="preview-component"></component>
@@ -38,7 +38,33 @@ const selectItem = (item) => {
   });
 }
 
+let previewContainer = null;
+let previewWidth;
+let previewHeight;
+let isDragging = false;
+const draggingCounter = ref(0);
+
+const onDragenter = (event) => {
+  if (draggingCounter.value === 0) {
+    console.log("拖拽进入...");
+    isDragging = true;
+  }
+  draggingCounter.value++;
+};
+
+const onDragleave = (event) => {
+  draggingCounter.value--;
+  if (draggingCounter.value === 0) {
+    console.log("拖拽离开...");
+    isDragging = false;
+  }
+};
+
 onMounted(() => {
+  previewContainer = document.getElementById('previewContainer');
+  const previewX = previewContainer.getBoundingClientRect().x;
+  previewWidth = previewContainer.offsetWidth;
+  previewHeight = previewContainer.offsetHeight;
   window.addEventListener('message', (event) => {
     const { data, source } = event;
     const { components } = previewList;
@@ -63,9 +89,30 @@ onMounted(() => {
       previewList.components = components;
       currentId.value = '';
     }
+    if (data.type === 'drag') {
+      // 拖拽添加组件
+      const {dragX, dragY} = data.data;
+      // const {x, y} = getPosition(dragX, dragY);
+      const x = dragX - previewX - 10;
+      const y = dragY - 20;
+      // console.log('drag:',x,y,dragX, dragY);
+      parentDragging(x, y);
+    }
 
   });
 });
+
+const parentDragging = (x, y) => {
+  if (isDragging && x > 0 && x < previewWidth && y > 0 && y < previewHeight) {
+    console.log('parentDragging:',x,y);
+  }
+}
+
+// const getPosition = (dragX, dragY) => {
+//   const x = dragX - 10;
+//   const y = dragY - 10;
+//   return {x, y};
+// }
 </script>
 
 <style scope>
@@ -103,6 +150,7 @@ onMounted(() => {
   border: 1px solid #999;
   padding: 0 5px;
   background: #fff;
+  cursor: move;
 }
 .preview-component-tip::before{
   content: ' ';
